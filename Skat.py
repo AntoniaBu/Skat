@@ -36,6 +36,22 @@ class Card:
     def __repr__(self):
         return self.get_name()
     
+    # define points of a rank
+    def num_points(self, rank):
+        if rank == "Ass":
+            return 11
+        if rank == "10":
+            return 10
+        if rank == "König":
+            return 4
+        if rank == "Dame":
+            return 3
+        if rank == "Bube":
+            return 2
+        if rank == "9" or rank == "8" or rank == "7":
+            return 0
+        return int(rank)
+    
     # define int value for the cards to make them sortable
     def num_rank(self, rank):
         if rank == "Bube":
@@ -61,6 +77,7 @@ class Card:
             return 4
         return int(suit)
     
+    # cards are gonna be sorted by suit & rank
     def __lt__(self, o):     # tuple ordering
         c1 = self.num_suit(self.suit), self.num_rank(self.rank)
         c2 = o.num_suit(o.suit), o.num_rank(o.rank)   
@@ -105,8 +122,9 @@ class Deck:
 
 class Player:
     
-    def __init__(self, name):
+    def __init__(self, name, number):
         self.name = name
+        self.number = number
         self.hand = []
                 
     def take_cards(self, hand_cards):
@@ -115,9 +133,25 @@ class Player:
     def sort_cards(self):
         return self.hand.sort()
         
-    def play_card(self):
-        pass
+    def play_card(self, current_player, console):
+        print('\nPlayer ' + current_player.number + ' cards: ')
+        print(current_player.hand)
         
+        # player selects a card from their hand they want to play
+        card_played = console.select_card(current_player.hand)
+        
+        # new Card object is instantiated
+        card_played = Card(card_played[1], card_played[0])
+        
+        # card is removed from their hand
+        current_player.hand.remove(card_played)
+    
+        print('\nPlayer ' + current_player.number + ' cards: ')
+        print(current_player.hand)
+        
+        input("\nPress Enter to continue...")
+        
+        return card_played
        
 
 class Game:   
@@ -126,36 +160,102 @@ class Game:
         pass
     
     def create_players(self, x, y, z):
-        p1 = Player(x)
-        p2 = Player(y)
-        p3 = Player(z)
+        p1 = Player(x, '1')
+        p2 = Player(y, '2')
+        p3 = Player(z, '3')
         return(p1, p2, p3)
     
+    def players_take_cards(self):
+        pass
+    
+    def players_sort_cards(self):
+        pass
+    
 
+    
+
+ 
+# =============================================================================
+# class GamePoints:
+#     
+#     points = 0
+#     
+#     def __init__(self):
+#         pass
+#  
+#     def count_stitch(self, c1, c2, c3):
+#         card1 = Card(c1[1], c1[0])
+#         card2 = Card(c2[1], c2[0])
+#         card3 = Card(c3[1], c3[0])
+#         
+#         #return card1.num_points(c1) + card2.num_points(c2) + card3.num_points(c3)
+#         pass
+# =============================================================================
+    
+    
 class Console:
     
     def init(self):
         pass
     
-    def type_player_names(self):
+    def get_player_names(self):
         x = input("Name player 1: ")
         y = input("Name player 2: ")
         z = input("Name player 3: ")
         return(x, y, z)
     
     def select_card(self, hand_cards):
-        card = input("\nType the card you want to play: ")
+        ###### TO DO !!!!!
+        # check if input has the correct form and can be handled by Card class
+        card_played = input("\n1 Type the card you want to play: \n").strip()
+        # card string is splitted
+        card = card_played.split(' ')
         
 # =============================================================================
+#         while not(len(card) == 2):
+#             print('\n2 Please select a hand card.')
+#             card_played = input("\n2 Type the card you want to play: \n").strip()   
+#             card = card_played.split(' ')
+#         # new Card object is instantiated
+#         card = Card(card[1], card[0])
+#         
 #         while True:
 #             try:
-#                 card in hand_cards
+#                 card_played = input("\n3 Type the card you want to play: \n").strip()  
+#                 card = card_played.split(' ')
+#                 # new Card object is instantiated
+#                 card = Card(card[1], card[0])
+#                 card = card in hand_cards
 #                 break
 #             except ValueError:
-#                 print('Please select a hand card.')
-#                 
-#         print('\n' + card + ' was played.')     
+#                 print('\n3 Please select a hand card.')
+#         print('YEY')
 # =============================================================================
+                
+            
+        while not(len(card) == 2):
+            print('\n2 Please select a hand card.')
+            card_played = input("\n2 Type the card you want to play: \n").strip()   
+            card = card_played.split(' ')
+            # new Card object is instantiated
+            card = Card(card[1], card[0])
+            
+# =============================================================================
+#         while True:
+#             try:                    
+#                 card = card in hand_cards
+#                 break
+#             except ValueError:
+#                 print('\n3 Please select a hand card.')
+#         print('YEY')
+#                 
+# =============================================================================
+
+              
+               
+          
+            
+        print('\n' + card_played + ' was played.')     
         return card
 
        
@@ -178,11 +278,7 @@ if __name__ == "__main__":
     # shuffle deck
     d.shuffle()
     
-# =============================================================================
-#     d.cards_in_deck.sort()
-#     print(d.cards_in_deck)
-# =============================================================================
-
+    
     #players take 10 cards each
     player1.take_cards(d.deal_cards(10))
     player2.take_cards(d.deal_cards(10))
@@ -192,19 +288,33 @@ if __name__ == "__main__":
     player1.sort_cards()
     player2.sort_cards()
     player3.sort_cards()
-    
-    print('\nPlayer 1 cards: ')
-    print(player1.hand)
-    
-    # player selects a card from their hand they want to play
-    # card is removed from their hand
-    card_played = c.select_card(player1.hand)
-    
-    #player1.hand.remove(card_played)
 
-    print('\nPlayer 1 cards: ')
-    print(player1.hand)
 
+    stitches = 0
+      
+    while (player1.hand):
+    # while players still hold cards in their hands
+    
+        # player 1 is playing a card
+        c1 = player1.play_card(player1, c)       
+        points_c1 = c1.num_points(c1.rank)
+    
+        # player 2 is playing a card
+        c2 = player2.play_card(player2, c)
+        points_c2 = c2.num_points(c2.rank)
+        
+        # player 3 is playing card
+        c3 = player3.play_card(player3, c)
+        points_c3 = c3.num_points(c3.rank)
+        
+        
+        # count stitch points
+        stitch = points_c1 + points_c2 + points_c3
+        print('\n---Current stitch points: ' + str(stitch) + '---')
+
+        stitches += stitch
+        
+        print('\n---All stitch points together: ' + str(stitches) + '---')
 
 
 # =============================================================================
